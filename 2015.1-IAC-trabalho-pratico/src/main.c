@@ -3,31 +3,41 @@
 #include <sys/wait.h> 
 #include <stdio.h> 
 #include <stdlib.h>
+#include <string.h>
 
-int main (int argc, char *argv[], char *envp[]) {
 
-int pid ; /* identificador de processo */
+int main (int argc, char *argv[]){
 
-pid = fork () ; /* replicação do processo */
+	int pid;    //for the identification of the child process
+	int i;  //for the iteration
+	char str[20];   //string for the system command
 
-if ( pid < 0 ) { /* se fork não funcionou */
-	perror ("Erro: ") ;
-	exit (-1) ; /* encerra o processo com código de erro -1 */ 
+	pid = fork ();  //creation and identificantion of the child process
+
+	if ( pid < 0 ){ //if the fork isn't working
+		perror ("Error"); 
+		exit (-1);  //end the program with the code error -1 
+	}
+	else if( pid > 0 ){ //parent process run it 
+		for(i=0;i<10;i++){
+			sleep(1);   //wait 1 second during the iteration
+			sprintf(str,"ps -p %d -o %%cpu,sz",pid);    //formating the string for the command
+			system(str); 
+
+		}	
+		kill(pid,SIGKILL);	//function to kill the child process
+	}
+
+	else{	//child process run it 
+		
+		if (strcmp (argv[1], "cpu") == 0)   //if the argument indicated is cpu
+		for(;;){}	//code for intense usage of cpu
+		
+		else if (strcmp (argv[1], "cpu-mem") == 0)  //if the argument indicated is cpu-mem
+		for(;;){malloc(100000);}	//code for intense usage of cpu and memory
+		}
+
+exit(0) ; //end the program with the sucess code 0
+
 }
-else if( pid > 0 ) /* se sou o processo pai*/ 
-{
-	//TODO guarde a cada segundo o consumo de memória (em Kilobytes) e CPU (em porcentagem) do processo filho
-	//TODO após 10 segundos de execução, mate o proceso filho
-}
-else /* senão, sou o processo filho*/ 
-{
-	//TODO se argv[1] for igual a 'cpu', executar código com utilização intensa da UCP
-	//TODO se argv[1] for igual a 'cpu-mem', executar código com utilização intensa da UCP e da memória:
 
-}
-perror ("Erro: ") ; /* execve não funcionou */
-
-printf ("Tchau !\n") ;
-exit(0) ; /* encerra o processo com sucesso (código 0) */ 
-
-}
